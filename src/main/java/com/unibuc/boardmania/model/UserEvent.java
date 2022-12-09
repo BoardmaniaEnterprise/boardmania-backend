@@ -6,28 +6,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "user_event")
+public class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String username;
+    @ManyToOne
+    @JoinColumn(name="user_id", nullable=false)
+    private User user;
 
-    private String firstName;
+    @ManyToOne
+    @JoinColumn(name="event_id", nullable=false)
+    private Event event;
 
-    private String lastName;
+    private boolean confirmed;
 
-    private String email;
-
-    @OneToMany(mappedBy = "initiatior")
-    private List<Event> createdEvents;
+    private boolean deleted;
 
 }
