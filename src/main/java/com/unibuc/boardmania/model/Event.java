@@ -33,13 +33,13 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
-    private User initiatior;
+    private User initiator;
 
-    @ManyToMany
-    @JoinTable(name = "event_games",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id"))
-    private List<Game> eventGames;
+    @OneToMany(mappedBy = "event")
+    private List<EventGame> eventGames;
+
+    @OneToMany(mappedBy = "event")
+    private List<Review> reviews;
 
     private boolean deleted;
 

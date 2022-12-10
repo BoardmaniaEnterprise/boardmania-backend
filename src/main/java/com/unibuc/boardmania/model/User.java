@@ -27,7 +27,23 @@ public class User {
 
     private String email;
 
-    @OneToMany(mappedBy = "initiatior")
+    @OneToMany(mappedBy = "initiator")
     private List<Event> createdEvents;
 
+    @OneToMany(mappedBy = "user")
+    private List<Rank> ranks;
+
+    @OneToMany(mappedBy = "reviewer")
+    private List<Review> reviewsSubmitted;
+
+    @OneToMany(mappedBy = "reviewedUser")
+    private List<Review> reviewsReceived;
+
+    @OneToMany(mappedBy = "reporter")
+    private List<Report> reportsSubmitted;
+
+    @OneToMany(mappedBy = "reportedUser")
+    private List<Report> reportsReceived;
+
+    private boolean deleted;
 }
