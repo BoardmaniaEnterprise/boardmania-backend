@@ -40,8 +40,8 @@ public class UserService {
                 .email(registerDto.getEmail())
                 .build();
 
-        Long userId = userRepository.save(newUser).getId();
-        keycloakAdminService.registerUser(userId, registerDto.getPassword(), "USER");
+        newUser = userRepository.save(newUser);
+        keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "USER");
     }
 
 

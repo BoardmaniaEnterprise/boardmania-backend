@@ -1,6 +1,7 @@
 package com.unibuc.boardmania.service;
 
 import com.unibuc.boardmania.config.AuthClient;
+import com.unibuc.boardmania.model.User;
 import com.unibuc.boardmania.repository.UserRepository;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
@@ -38,11 +39,13 @@ public class KeycloakAdminService {
         this.realm = this.keycloak.realm(keycloakRealm);
     }
 
-    public void registerUser(Long userId, String password, String role) {
+    public void registerUser(User user, String password, String role) {
         UserRepresentation keycloakUser = new UserRepresentation();
         keycloakUser.setEnabled(true);
-        keycloakUser.setUsername(userId.toString());
-
+        keycloakUser.setUsername(user.getId().toString());
+        keycloakUser.setEmail(user.getEmail());
+        keycloakUser.setFirstName(user.getFirstName());
+        keycloakUser.setLastName(user.getLastName());
 
         CredentialRepresentation credentialRepresentation = new CredentialRepresentation();
 
