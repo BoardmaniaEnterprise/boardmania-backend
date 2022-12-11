@@ -1,5 +1,6 @@
 package com.unibuc.boardmania.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +34,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
+    @JsonIgnoreProperties(value = "createdEvents")
     private User initiator;
 
     @OneToMany(mappedBy = "event")
@@ -40,6 +42,10 @@ public class Event {
 
     @OneToMany(mappedBy = "event")
     private List<Review> reviews;
+
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game pickedGame;
 
     private boolean deleted;
 

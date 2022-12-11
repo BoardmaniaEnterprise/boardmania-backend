@@ -27,6 +27,8 @@ public class User {
 
     private String email;
 
+    private Double trustScore;
+
     @OneToMany(mappedBy = "initiator")
     private List<Event> createdEvents;
 
