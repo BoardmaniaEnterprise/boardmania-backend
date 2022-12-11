@@ -35,6 +35,9 @@ public class Game {
     @OneToMany(mappedBy = "game")
     private List<Rank> ranks;
 
+    @OneToMany(mappedBy = "pickedGame")
+    private List<Event> events;
+
     private boolean deleted;
 
 }

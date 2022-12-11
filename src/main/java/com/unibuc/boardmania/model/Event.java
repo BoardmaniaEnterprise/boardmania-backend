@@ -41,6 +41,10 @@ public class Event {
     @OneToMany(mappedBy = "event")
     private List<Review> reviews;
 
+    @ManyToOne
+    @JoinColumn(name = "game_id", nullable = false)
+    private Game pickedGame;
+
     private boolean deleted;
 
 }
