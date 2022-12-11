@@ -6,35 +6,28 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "games")
-public class Game {
+@Table(name = "ranks")
+public class Rank {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String name;
 
-    private int minNumberOfPlayers;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    private int maxNumberOfPlayers;
-
-    private String description;
-
-    private String url;
-
-    @OneToMany(mappedBy = "game")
-    private List<EventGame> eventGames;
-
-    @OneToMany(mappedBy = "game")
-    private List<Rank> ranks;
+    @ManyToOne
+    @JoinColumn(name = "game_id", nullable = false)
+    private Game game;
 
     private boolean deleted;
-
 }

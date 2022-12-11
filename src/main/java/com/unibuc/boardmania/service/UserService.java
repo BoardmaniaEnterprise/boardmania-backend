@@ -38,6 +38,7 @@ public class UserService {
                 .firstName(registerDto.getFirstName())
                 .lastName(registerDto.getLastName())
                 .email(registerDto.getEmail())
+                .deleted(false)
                 .build();
 
         newUser = userRepository.save(newUser);
