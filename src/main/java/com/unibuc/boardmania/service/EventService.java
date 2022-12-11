@@ -7,6 +7,7 @@ import com.unibuc.boardmania.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
@@ -54,16 +55,14 @@ public class EventService {
                     .event(savedEvent)
                     .votes(List.of())
                     .build();
-            eventGame = eventGameRepository.save(eventGame);
-
-            savedEvent.getEventGames().add(eventGame);
-            game.getEventGames().add(eventGame);
+            eventGameRepository.save(eventGame);
         });
         user.getCreatedEvents().add(savedEvent);
 
         return event;
     }
 
+    @Transactional
     public void joinEvent(JoinEventDto joinEventDto, Long eventId, Long userId) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found!"));
@@ -89,8 +88,7 @@ public class EventService {
                     .user(user)
                     .deleted(false)
                     .build();
-            vote = voteRepository.save(vote);
-            eventGame.getVotes().add(vote);
+            voteRepository.save(vote);
         });
     }
 }
