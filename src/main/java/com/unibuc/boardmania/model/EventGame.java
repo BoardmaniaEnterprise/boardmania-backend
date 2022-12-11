@@ -28,8 +28,7 @@ public class EventGame {
     @JoinColumn(name="game_id", nullable=false)
     private Game game;
 
-    @OneToMany
-    @JoinColumn(name = "vote_id", nullable = false)
+    @OneToMany(mappedBy = "eventGame")
     private List<Vote> votes;
 
     private String minRank;
