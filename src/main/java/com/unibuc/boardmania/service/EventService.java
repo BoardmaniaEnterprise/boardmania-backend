@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +26,8 @@ public class EventService {
     private final EventGameRepository eventGameRepository;
     @Autowired
     private final VoteRepository voteRepository;
+    @Autowired
+    private final GameRepository gameRepository;
 
     public Event createEvent(CreateEventDto createEventDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found!"));
@@ -39,8 +42,24 @@ public class EventService {
                 .online(createEventDto.isOnline())
                 .deleted(false)
                 .build();
-        event = eventRepository.save(event);
-        user.getCreatedEvents().add(event);
+
+        Event savedEvent = eventRepository.save(event);
+
+        createEventDto.getGameIds().forEach(gameId -> {
+            Game game = gameRepository.findById(gameId)
+                    .orElseThrow(() -> new NotFoundException("Game with id " + gameId + "not found!"));
+            EventGame eventGame = EventGame.builder()
+                    .game(game)
+                    .deleted(false)
+                    .event(savedEvent)
+                    .votes(List.of())
+                    .build();
+            eventGame = eventGameRepository.save(eventGame);
+
+            savedEvent.getEventGames().add(eventGame);
+            game.getEventGames().add(eventGame);
+        });
+        user.getCreatedEvents().add(savedEvent);
 
         return event;
     }
