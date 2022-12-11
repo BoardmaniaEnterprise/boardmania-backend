@@ -13,21 +13,25 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users")
-public class User {
+@Table(name = "games")
+public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String username;
+    private String name;
 
-    private String firstName;
+    private int minNumberOfPlayers;
 
-    private String lastName;
+    private int maxNumberOfPlayers;
 
-    private String email;
+    private String description;
 
-    @OneToMany(mappedBy = "initiatior")
-    private List<Event> createdEvents;
+    private String url;
+
+    @ManyToMany(mappedBy = "eventGames")
+    private List<Event> gameEvents;
+
+    private boolean deleted;
 
 }

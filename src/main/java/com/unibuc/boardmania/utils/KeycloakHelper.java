@@ -7,9 +7,9 @@ import java.util.Set;
 
 public class KeycloakHelper {
 
-    public static String getUser(Authentication authentication) {
-        return ((KeycloakPrincipal) authentication.getPrincipal()).getKeycloakSecurityContext()
-                .getToken().getPreferredUsername();
+    public static Long getUserId(Authentication authentication) {
+        return Long.parseLong(((KeycloakPrincipal) authentication.getPrincipal()).getKeycloakSecurityContext()
+                .getToken().getPreferredUsername());
     }
 
     public static Set<String> getUserRoles(Authentication authentication) {
