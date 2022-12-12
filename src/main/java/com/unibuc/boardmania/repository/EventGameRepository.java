@@ -12,4 +12,7 @@ public interface EventGameRepository extends JpaRepository<EventGame, Long> {
 
     @Query("SELECT ev FROM EventGame ev WHERE ev.event.id = :eventId AND ev.game.id = :gameId AND ev.deleted=false")
     Optional<EventGame> findByEventIdAndGameId(Long eventId, Long gameId);
+
+    @Query("SELECT COUNT(ev) FROM EventGame ev WHERE ev.event.id = :eventId AND ev.game.id = :gameId AND ev.deleted = false")
+    Integer countVotes(Long eventId, Long gameId);
 }
