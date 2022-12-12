@@ -61,18 +61,18 @@ public class KeycloakAdminService {
 
     }
 
-    public void deleteUser(Long userId) {
-        UserRepresentation userRepresentation = realm.users().search(userId.toString()).get(0);
-        realm.users().delete(userRepresentation.getId());
-
-    }
-
-    public void deleteAllUsers() {
-        List<UserRepresentation> users = realm.users().list();
-        for(UserRepresentation ur : users) {
-            realm.users().delete(ur.getId());
-        }
-    }
+//    public void deleteUser(Long userId) {
+//        UserRepresentation userRepresentation = realm.users().search(userId.toString()).get(0);
+//        realm.users().delete(userRepresentation.getId());
+//
+//    }
+//
+//    public void deleteAllUsers() {
+//        List<UserRepresentation> users = realm.users().list();
+//        for(UserRepresentation ur : users) {
+//            realm.users().delete(ur.getId());
+//        }
+//    }
 
     /*
     public void changePassword(ChangePasswordDto changePasswordDto) {
@@ -88,20 +88,20 @@ public class KeycloakAdminService {
     }
     */
 
-    public void addRole(String roleName, Long uid) {
-        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
-        UserResource userResource = realm.users().get(keycloakUid);
-        RoleRepresentation roleToAdd = realm.roles().get(roleName).toRepresentation();
-
-        userResource.roles().realmLevel().add(Collections.singletonList(roleToAdd));
-    }
-
-    public void removeRole(String roleName, Long uid) {
-        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
-        UserResource userResource = realm.users().get(keycloakUid);
-        RoleRepresentation roleToRemove = realm.roles().get(roleName).toRepresentation();
-
-        userResource.roles().realmLevel().remove(Collections.singletonList(roleToRemove));
-    }
+//    public void addRole(String roleName, Long uid) {
+//        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
+//        UserResource userResource = realm.users().get(keycloakUid);
+//        RoleRepresentation roleToAdd = realm.roles().get(roleName).toRepresentation();
+//
+//        userResource.roles().realmLevel().add(Collections.singletonList(roleToAdd));
+//    }
+//
+//    public void removeRole(String roleName, Long uid) {
+//        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
+//        UserResource userResource = realm.users().get(keycloakUid);
+//        RoleRepresentation roleToRemove = realm.roles().get(roleName).toRepresentation();
+//
+//        userResource.roles().realmLevel().remove(Collections.singletonList(roleToRemove));
+//    }
 
 }

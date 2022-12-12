@@ -7,6 +7,7 @@ import com.unibuc.boardmania.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import java.util.List;
 
@@ -16,9 +17,9 @@ public class GameService {
 
     private final GameRepository gameRepository;
 
-    public Long addGame(NewGameDto newGameDto, Long userId) throws Exception {
+    public Long addGame(NewGameDto newGameDto, Long userId) {
         if (gameRepository.findByName(newGameDto.getName()).isPresent()) {
-            throw new Exception("Game already exists");
+            throw new BadRequestException("Game already exists");
         }
         Game game = Game.builder()
                 .name(newGameDto.getName())
