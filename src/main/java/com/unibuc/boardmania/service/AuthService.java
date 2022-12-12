@@ -8,7 +8,6 @@ import com.unibuc.boardmania.model.User;
 import com.unibuc.boardmania.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,12 +15,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.ws.rs.NotFoundException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final AuthClient authClient;
     private final UserRepository userRepository;
 

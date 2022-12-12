@@ -1,15 +1,12 @@
 package com.unibuc.boardmania.service;
 
-import com.unibuc.boardmania.config.AuthClient;
 import com.unibuc.boardmania.model.User;
-import com.unibuc.boardmania.repository.UserRepository;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +26,6 @@ public class KeycloakAdminService {
     private final Keycloak keycloak;
     private RealmResource realm;
 
-    @Autowired
     public KeycloakAdminService(Keycloak keycloak) {
         this.keycloak = keycloak;
     }
