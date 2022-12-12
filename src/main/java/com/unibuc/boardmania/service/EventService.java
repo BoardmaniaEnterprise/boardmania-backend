@@ -67,6 +67,9 @@ public class EventService {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found!"));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found!"));
+        if (userEventRepository.findByEventIdAndUserId(eventId, userId).isPresent()) {
+            throw new BadRequestException("User already joined this event!");
+        }
         if (user.getTrustScore() < event.getMinTrustScore()) {
             throw new BadRequestException("Trust score too low to take part in this event.");
         }
@@ -90,5 +93,29 @@ public class EventService {
                     .build();
             voteRepository.save(vote);
         });
+    }
+
+    @Transactional
+    public void pickGame(Long eventId, Long gameId, Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found!"));
+        Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found!"));
+        Game game = gameRepository.findById(gameId).orElseThrow(() -> new NotFoundException("Game not found!"));
+
+        if (event.getInitiator().getId() != user.getId()) {
+            throw new BadRequestException("Only the initiator can pick a game for the event!");
+        }
+        if (eventGameRepository.findByEventIdAndGameId(eventId, gameId).isEmpty()) {
+            throw new NotFoundException("Game unavailable in this event!");
+        }
+        if (event.getPickedGame() != null) {
+            throw new BadRequestException(String.format("The game %s has already been picked in this event!",
+                    event.getPickedGame().getName()));
+        }
+        Integer numOfVotesForGame = eventGameRepository.countVotes(eventId, gameId);
+        if (numOfVotesForGame < game.getMinNumberOfPlayers()) {
+            throw new BadRequestException("Game does not meet necessary number of players!");
+        }
+        event.setPickedGame(game);
+        eventRepository.save(event);
     }
 }

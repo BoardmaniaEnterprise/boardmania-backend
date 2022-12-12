@@ -37,4 +37,9 @@ public class EventController {
         return successResponse();
     }
 
+    @PostMapping("/pickGame/{eventId}/{gameId}")
+    public ResponseEntity<?> pickGame(@PathVariable Long eventId, @PathVariable Long gameId, Authentication authentication) {
+        eventService.pickGame(eventId, gameId, KeycloakHelper.getUserId(authentication));
+        return successResponse();
+    }
 }
