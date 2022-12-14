@@ -6,6 +6,7 @@ import com.unibuc.boardmania.service.EventService;
 import com.unibuc.boardmania.utils.KeycloakHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

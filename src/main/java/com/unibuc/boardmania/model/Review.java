@@ -21,7 +21,7 @@ public class Review {
 
     private String comment;
 
-    private Long honor;
+    private HonorTitle honor;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

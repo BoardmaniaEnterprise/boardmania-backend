@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -25,6 +27,8 @@ public class Event {
     private String description;
 
     private String location;
+
+    private LocalDateTime dateTime;
 
     private boolean online;
 

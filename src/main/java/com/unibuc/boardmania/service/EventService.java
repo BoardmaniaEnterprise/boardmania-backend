@@ -38,6 +38,7 @@ public class EventService {
                 .initiator(user)
                 .description(createEventDto.getDescription())
                 .location(createEventDto.getLocation())
+                .dateTime(createEventDto.getDateTime())
                 .maxNumberOfPlayers(createEventDto.getMaxNrOfPlayers())
                 .minTrustScore(createEventDto.getMinTrustScore())
                 .online(createEventDto.isOnline())
