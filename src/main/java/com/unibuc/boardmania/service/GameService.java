@@ -3,13 +3,11 @@ package com.unibuc.boardmania.service;
 import com.unibuc.boardmania.dto.NewGameDto;
 import com.unibuc.boardmania.dto.UpdateGameDto;
 import com.unibuc.boardmania.model.Game;
-import com.unibuc.boardmania.model.User;
 import com.unibuc.boardmania.repository.GameRepository;
-import com.unibuc.boardmania.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import java.util.List;
 
@@ -17,12 +15,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameService {
 
-    @Autowired
     private final GameRepository gameRepository;
 
-    public Long addGame(NewGameDto newGameDto, Long userId) throws Exception {
+    public Long addGame(NewGameDto newGameDto, Long userId) {
         if (gameRepository.findByName(newGameDto.getName()).isPresent()) {
-            throw new Exception("Game already exists");
+            throw new BadRequestException("Game already exists");
         }
         Game game = Game.builder()
                 .name(newGameDto.getName())

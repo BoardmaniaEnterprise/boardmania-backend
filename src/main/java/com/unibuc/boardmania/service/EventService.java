@@ -5,7 +5,6 @@ import com.unibuc.boardmania.dto.JoinEventDto;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +16,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventService {
 
-    @Autowired
     private final EventRepository eventRepository;
-    @Autowired
+
     private final UserRepository userRepository;
-    @Autowired
+
     private final UserEventRepository userEventRepository;
-    @Autowired
+
     private final EventGameRepository eventGameRepository;
-    @Autowired
+
     private final VoteRepository voteRepository;
-    @Autowired
+
     private final GameRepository gameRepository;
 
     public Event createEvent(CreateEventDto createEventDto, Long userId) {
@@ -48,7 +46,7 @@ public class EventService {
 
         createEventDto.getGameIds().forEach(gameId -> {
             Game game = gameRepository.findById(gameId)
-                    .orElseThrow(() -> new NotFoundException("Game with id " + gameId + "not found!"));
+                    .orElseThrow(() -> new NotFoundException("Game with id " + gameId + " not found!"));
             EventGame eventGame = EventGame.builder()
                     .game(game)
                     .deleted(false)
@@ -101,7 +99,7 @@ public class EventService {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found!"));
         Game game = gameRepository.findById(gameId).orElseThrow(() -> new NotFoundException("Game not found!"));
 
-        if (event.getInitiator().getId() != user.getId()) {
+        if (!event.getInitiator().getId().equals(user.getId())) {
             throw new BadRequestException("Only the initiator can pick a game for the event!");
         }
         if (eventGameRepository.findByEventIdAndGameId(eventId, gameId).isEmpty()) {

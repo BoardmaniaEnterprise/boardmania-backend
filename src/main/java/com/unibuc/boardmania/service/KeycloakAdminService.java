@@ -1,15 +1,12 @@
 package com.unibuc.boardmania.service;
 
-import com.unibuc.boardmania.config.AuthClient;
 import com.unibuc.boardmania.model.User;
-import com.unibuc.boardmania.repository.UserRepository;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +26,6 @@ public class KeycloakAdminService {
     private final Keycloak keycloak;
     private RealmResource realm;
 
-    @Autowired
     public KeycloakAdminService(Keycloak keycloak) {
         this.keycloak = keycloak;
     }
@@ -65,18 +61,18 @@ public class KeycloakAdminService {
 
     }
 
-    public void deleteUser(Long userId) {
-        UserRepresentation userRepresentation = realm.users().search(userId.toString()).get(0);
-        realm.users().delete(userRepresentation.getId());
-
-    }
-
-    public void deleteAllUsers() {
-        List<UserRepresentation> users = realm.users().list();
-        for(UserRepresentation ur : users) {
-            realm.users().delete(ur.getId());
-        }
-    }
+//    public void deleteUser(Long userId) {
+//        UserRepresentation userRepresentation = realm.users().search(userId.toString()).get(0);
+//        realm.users().delete(userRepresentation.getId());
+//
+//    }
+//
+//    public void deleteAllUsers() {
+//        List<UserRepresentation> users = realm.users().list();
+//        for(UserRepresentation ur : users) {
+//            realm.users().delete(ur.getId());
+//        }
+//    }
 
     /*
     public void changePassword(ChangePasswordDto changePasswordDto) {
@@ -92,20 +88,20 @@ public class KeycloakAdminService {
     }
     */
 
-    public void addRole(String roleName, Long uid) {
-        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
-        UserResource userResource = realm.users().get(keycloakUid);
-        RoleRepresentation roleToAdd = realm.roles().get(roleName).toRepresentation();
-
-        userResource.roles().realmLevel().add(Collections.singletonList(roleToAdd));
-    }
-
-    public void removeRole(String roleName, Long uid) {
-        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
-        UserResource userResource = realm.users().get(keycloakUid);
-        RoleRepresentation roleToRemove = realm.roles().get(roleName).toRepresentation();
-
-        userResource.roles().realmLevel().remove(Collections.singletonList(roleToRemove));
-    }
+//    public void addRole(String roleName, Long uid) {
+//        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
+//        UserResource userResource = realm.users().get(keycloakUid);
+//        RoleRepresentation roleToAdd = realm.roles().get(roleName).toRepresentation();
+//
+//        userResource.roles().realmLevel().add(Collections.singletonList(roleToAdd));
+//    }
+//
+//    public void removeRole(String roleName, Long uid) {
+//        String keycloakUid = realm.users().search(uid.toString()).get(0).getId();
+//        UserResource userResource = realm.users().get(keycloakUid);
+//        RoleRepresentation roleToRemove = realm.roles().get(roleName).toRepresentation();
+//
+//        userResource.roles().realmLevel().remove(Collections.singletonList(roleToRemove));
+//    }
 
 }

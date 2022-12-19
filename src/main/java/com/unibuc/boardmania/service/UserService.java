@@ -5,7 +5,6 @@ import com.unibuc.boardmania.dto.UserDto;
 import com.unibuc.boardmania.model.User;
 import com.unibuc.boardmania.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -45,8 +44,5 @@ public class UserService {
         newUser = userRepository.save(newUser);
         keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "USER");
     }
-
-
-
 
 }
