@@ -43,4 +43,9 @@ public class EventController {
         eventService.pickGame(eventId, gameId, KeycloakHelper.getUserId(authentication));
         return successResponse();
     }
+
+    @GetMapping
+    public ResponseEntity<?> getAllEvents(Authentication authentication) {
+        return new ResponseEntity<>(eventService.getAllEvents(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
+    }
 }

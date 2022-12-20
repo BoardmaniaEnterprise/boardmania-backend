@@ -29,7 +29,7 @@ public class AuthService {
     @SneakyThrows
     public TokenDto login(LoginDto loginDto) {
         User inAppUser = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The user doesn't exist!"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The user doesn't exist!" + loginDto.getEmail()));
 
         // Set the request body
         MultiValueMap<String, String> loginCredentials = new LinkedMultiValueMap<>();

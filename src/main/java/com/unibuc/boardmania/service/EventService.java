@@ -1,6 +1,7 @@
 package com.unibuc.boardmania.service;
 
 import com.unibuc.boardmania.dto.CreateEventDto;
+import com.unibuc.boardmania.dto.EventDto;
 import com.unibuc.boardmania.dto.JoinEventDto;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -116,5 +118,22 @@ public class EventService {
         }
         event.setPickedGame(game);
         eventRepository.save(event);
+    }
+
+    public List<EventDto> getAllEvents(Long userId) {
+
+        List<Event> events = eventRepository.findAllByDeletedFalse();
+        List<EventDto> eventDtoList = events.stream()
+                .map(event -> EventDto.builder()
+                        .id(event.getId())
+                        .description(event.getDescription())
+                        .minTrustScore(event.getMinTrustScore())
+                        .location(event.getLocation())
+                        .name(event.getName())
+                        .online(event.isOnline())
+                        .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
+                        .dateTime(event.getDateTime())
+                        .build()).collect(Collectors.toList());
+        return eventDtoList;
     }
 }
