@@ -9,6 +9,7 @@ import com.unibuc.boardmania.repository.ReviewRepository;
 import com.unibuc.boardmania.repository.UserEventRepository;
 import com.unibuc.boardmania.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +38,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void registerUser(RegisterDto registerDto) {
         if (userRepository.existsByEmail(registerDto.getEmail())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("User with email %s already exists!", registerDto.getEmail()));
@@ -53,7 +54,7 @@ public class UserService {
                 .build();
 
         newUser = userRepository.save(newUser);
-        keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "USER");
+        keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "ROLE_USER");
     }
 
     @Transactional
@@ -62,7 +63,7 @@ public class UserService {
             throw new NotFoundException("User not found!");
         }
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found!"));
-        if (event.getDateTime().isAfter(LocalDateTime.now())) {
+        if (event.getEventDateTimeStamp() > DateTime.now().getMillis()) {
             throw new BadRequestException("Cannot send review before the event begins!");
         }
         if (userEventRepository.findByEventIdAndUserId(eventId, reviewerId).isEmpty() ||

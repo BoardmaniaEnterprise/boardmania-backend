@@ -17,7 +17,7 @@ public class GameService {
 
     private final GameRepository gameRepository;
 
-    public Long addGame(NewGameDto newGameDto, Long userId) {
+    public Long addGame(NewGameDto newGameDto) {
         if (gameRepository.findByName(newGameDto.getName()).isPresent()) {
             throw new BadRequestException("Game already exists");
         }

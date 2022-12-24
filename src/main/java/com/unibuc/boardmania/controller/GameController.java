@@ -23,17 +23,17 @@ public class GameController {
     private final GameService gameService;
 
     @PostMapping
-    public ResponseEntity<?> addGame(@RequestBody NewGameDto newGameDto, Authentication authentication) throws Exception {
-        return new ResponseEntity<>(gameService.addGame(newGameDto, KeycloakHelper.getUserId(authentication)), HttpStatus.CREATED);
+    public ResponseEntity<?> addGame(@RequestBody NewGameDto newGameDto) {
+        return new ResponseEntity<>(gameService.addGame(newGameDto), HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllGames(Authentication authentication) {
+    public ResponseEntity<?> getAllGames() {
         return new ResponseEntity<>(gameService.getAllGames(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getGame(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<?> getGame(@PathVariable Long id) {
         return new ResponseEntity<>(gameService.getGame(id), HttpStatus.OK);
     }
 

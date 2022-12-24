@@ -26,6 +26,8 @@ public class UserEvent {
     @JoinColumn(name="event_id", nullable=false)
     private Event event;
 
+    private boolean sentConfirmationEmail;
+
     private boolean confirmed;
 
     private boolean deleted;

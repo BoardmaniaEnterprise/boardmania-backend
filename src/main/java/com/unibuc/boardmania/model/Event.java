@@ -28,9 +28,15 @@ public class Event {
 
     private String location;
 
-    private LocalDateTime dateTime;
+    private Long eventDateTimeStamp;
+
+    private Long votingDeadlineTimestamp;
+
+    private Long confirmationDeadlineTimestamp;
 
     private boolean online;
+
+    private boolean sentConfirmationEmails;
 
     private int maxNumberOfPlayers;
 
@@ -40,6 +46,9 @@ public class Event {
     @JoinColumn(name="user_id", nullable=false)
     @JsonIgnoreProperties(value = "createdEvents")
     private User initiator;
+
+    @OneToMany(mappedBy = "event")
+    private List<UserEvent> participants;
 
     @OneToMany(mappedBy = "event")
     private List<EventGame> eventGames;

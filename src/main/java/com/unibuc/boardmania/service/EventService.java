@@ -6,10 +6,12 @@ import com.unibuc.boardmania.dto.JoinEventDto;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,17 +32,42 @@ public class EventService {
 
     private final GameRepository gameRepository;
 
+    public List<EventDto> getEvents(Long userId) {
+
+        List<Event> events = eventRepository.findAllByDeletedFalse();
+        List<EventDto> eventDtoList = events.stream()
+                .map(event -> EventDto.builder()
+                        .id(event.getId())
+                        .description(event.getDescription())
+                        .minTrustScore(event.getMinTrustScore())
+                        .location(event.getLocation())
+                        .name(event.getName())
+                        .eventDateTimeStamp(event.getEventDateTimeStamp())
+                        .votingDeadlineTimestamp(event.getVotingDeadlineTimestamp())
+                        .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
+                        .online(event.isOnline())
+                        .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
+                        .build()).collect(Collectors.toList());
+        return eventDtoList;
+    }
+
     public Event createEvent(CreateEventDto createEventDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found!"));
+
+        if (user.getTrustScore() < 80) {
+            throw new ForbiddenException("Users with less than 80 trust score cannot create events.");
+        }
 
         Event event = Event.builder()
                 .name(createEventDto.getName())
                 .initiator(user)
                 .description(createEventDto.getDescription())
                 .location(createEventDto.getLocation())
-                .dateTime(createEventDto.getDateTime())
                 .maxNumberOfPlayers(createEventDto.getMaxNrOfPlayers())
                 .minTrustScore(createEventDto.getMinTrustScore())
+                .eventDateTimeStamp(createEventDto.getEventDateTimeStamp())
+                .votingDeadlineTimestamp(createEventDto.getVotingDeadlineTimestamp())
+                .confirmationDeadlineTimestamp(createEventDto.getConfirmationDeadlineTimestamp())
                 .online(createEventDto.isOnline())
                 .deleted(false)
                 .build();
@@ -120,20 +147,9 @@ public class EventService {
         eventRepository.save(event);
     }
 
-    public List<EventDto> getAllEvents(Long userId) {
+//    @Scheduled
+    public void notifyConfirmationPeriod() {
 
-        List<Event> events = eventRepository.findAllByDeletedFalse();
-        List<EventDto> eventDtoList = events.stream()
-                .map(event -> EventDto.builder()
-                        .id(event.getId())
-                        .description(event.getDescription())
-                        .minTrustScore(event.getMinTrustScore())
-                        .location(event.getLocation())
-                        .name(event.getName())
-                        .online(event.isOnline())
-                        .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
-                        .dateTime(event.getDateTime())
-                        .build()).collect(Collectors.toList());
-        return eventDtoList;
     }
+
 }

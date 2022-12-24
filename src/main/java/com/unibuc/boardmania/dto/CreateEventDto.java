@@ -21,8 +21,11 @@ public class CreateEventDto {
 
     private String location;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime dateTime;
+    private Long eventDateTimeStamp;
+
+    private Long votingDeadlineTimestamp;
+
+    private Long confirmationDeadlineTimestamp;
 
     private boolean online;
 
