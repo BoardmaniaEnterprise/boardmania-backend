@@ -1,6 +1,7 @@
 package com.unibuc.boardmania.model;
 
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,6 +17,8 @@ public class Token {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Type(type = "uuid-char")
+    @Column(name = "`value`")
     private UUID value;
 
     @ManyToOne

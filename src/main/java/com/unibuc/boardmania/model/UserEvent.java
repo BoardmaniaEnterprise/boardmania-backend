@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_event")
+@Entity(name = "user_event")
 public class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

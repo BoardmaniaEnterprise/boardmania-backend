@@ -21,7 +21,7 @@ public class CreateEventDto {
 
     private String location;
 
-    private Long eventDateTimeStamp;
+    private Long eventDateTimestamp;
 
     private Long votingDeadlineTimestamp;
 
@@ -31,7 +31,7 @@ public class CreateEventDto {
 
     private int maxNrOfPlayers;
 
-    private Double minTrustScore;
+    private int minTrustScore;
 
     private List<Long> gameIds;
 

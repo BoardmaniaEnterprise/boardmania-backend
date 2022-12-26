@@ -6,6 +6,8 @@ import com.unibuc.boardmania.dto.JoinEventDto;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class EventService {
+
+    private final SendMailService sendMailService;
 
     private final EventRepository eventRepository;
 
@@ -28,9 +37,16 @@ public class EventService {
 
     private final EventGameRepository eventGameRepository;
 
+    private final TokenRepository tokenRepository;
+
     private final VoteRepository voteRepository;
 
     private final GameRepository gameRepository;
+
+    private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+
+    @Value("${link.confirm.attendance}")
+    private String confirmationLink;
 
     public List<EventDto> getEvents(Long userId) {
 
@@ -42,7 +58,7 @@ public class EventService {
                         .minTrustScore(event.getMinTrustScore())
                         .location(event.getLocation())
                         .name(event.getName())
-                        .eventDateTimeStamp(event.getEventDateTimeStamp())
+                        .eventDateTimestamp(event.getEventDateTimestamp())
                         .votingDeadlineTimestamp(event.getVotingDeadlineTimestamp())
                         .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
                         .online(event.isOnline())
@@ -65,10 +81,11 @@ public class EventService {
                 .location(createEventDto.getLocation())
                 .maxNumberOfPlayers(createEventDto.getMaxNrOfPlayers())
                 .minTrustScore(createEventDto.getMinTrustScore())
-                .eventDateTimeStamp(createEventDto.getEventDateTimeStamp())
+                .eventDateTimestamp(createEventDto.getEventDateTimestamp())
                 .votingDeadlineTimestamp(createEventDto.getVotingDeadlineTimestamp())
                 .confirmationDeadlineTimestamp(createEventDto.getConfirmationDeadlineTimestamp())
                 .online(createEventDto.isOnline())
+                .participants(new ArrayList<>())
                 .deleted(false)
                 .build();
 
@@ -106,9 +123,12 @@ public class EventService {
                 .event(event)
                 .user(user)
                 .confirmed(false)
+                .sentConfirmationEmail(false)
                 .deleted(false)
                 .build();
         userEventRepository.save(userEvent);
+
+        event.addParticipant(userEvent);
 
         joinEventDto.getVoteDtoList().forEach(voteDto -> {
             Long gameId = voteDto.getGameId();
@@ -147,9 +167,61 @@ public class EventService {
         eventRepository.save(event);
     }
 
-//    @Scheduled
+    @Transactional
+    public void confirmParticipation(String tokenString) {
+
+        Token token = getTokenByValue(UUID.fromString(tokenString));
+        Long eventId = token.getRelatedObjectId();
+        Long userId = token.getUser().getId();
+        tokenRepository.deleteByValue(UUID.fromString(tokenString));
+
+        userEventRepository.updateConfirmedByUserIdAndEventId(userId, eventId, true);
+    }
+
+    @Scheduled(cron = "00 00 * * * *", zone = "Europe/Bucharest")
+    @Transactional
     public void notifyConfirmationPeriod() {
 
+        List<Event> eventsNeedingConfirmation =
+                eventRepository.findAllByVotingDeadlineTimestampBeforeAndSentConfirmationEmailsFalseAndDeletedFalse(DateTime.now().getMillis());
+        eventsNeedingConfirmation.forEach(
+                e -> {
+                    boolean confirmationMailsSent = true;
+                    List<UserEvent> userEventList = userEventRepository.getParticipantsByEventId(e.getId());
+                    for (UserEvent ue: userEventList) {
+                        try {
+                            if (!ue.isSentConfirmationEmail()) {
+                                Token existingToken = tokenRepository.findByUserIdAndEventId(ue.getUser().getId(), e.getId());
+                                if (existingToken == null) {
+                                    existingToken = new Token(null, ue.getUser(), e.getId(),
+                                            DateTime.now().getMillis(), DateTime.now().plusDays(10).getMillis());
+                                    tokenRepository.save(existingToken);
+                                }
+                                Token token = existingToken;
+
+                                String mailSubject = String.format("Confirmation reminder for event %s", e.getName());
+                                String mailMessage = String.format("To confirm presence to the event please click this link before <b>%s</b>: %s",
+                                        df.format(new Date(e.getConfirmationDeadlineTimestamp() * 1000)),
+                                        confirmationLink + token.getValue().toString());
+                                sendMailService.sendMail(ue.getUser().getEmail(), mailSubject, mailMessage);
+                                userEventRepository.updateSentConfirmationEmail(ue.getId(), true);
+                            }
+                        } catch (Exception ex) {
+                            confirmationMailsSent = false;
+                            ex.printStackTrace();
+                        }
+                    }
+                    if (confirmationMailsSent) {
+                        eventRepository.updateSentConfirmationEmails(e.getId(), true);
+                    }
+                }
+        );
+    }
+
+    private Token getTokenByValue(UUID value) {
+        return tokenRepository
+                .findByValue(value)
+                .orElseThrow(() -> new NotFoundException("Token not found or no longer in use"));
     }
 
 }

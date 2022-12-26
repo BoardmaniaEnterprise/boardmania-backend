@@ -46,4 +46,10 @@ public class EventController {
         return successResponse();
     }
 
+    @PatchMapping("/confirm")
+    public ResponseEntity<?> confirmParticipation(@RequestParam String token) {
+        eventService.confirmParticipation(token);
+        return successResponse();
+    }
+
 }

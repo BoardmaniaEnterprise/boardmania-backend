@@ -9,6 +9,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
 
 @Service
@@ -20,7 +23,12 @@ public class SendMailService {
     @Value("${mail.password}")
     private String password;
 
+    @Value("${link.confirm.attendance}")
+    private String confirmationLink;
+
     private final Properties prop;
+
+    private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
 
     public SendMailService() {
         prop = new Properties();
@@ -31,8 +39,7 @@ public class SendMailService {
         prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
     }
 
-    @Scheduled(cron = "0 59 14 * * *", zone = "Europe/Bucharest")
-    public void sendMail() throws Exception {
+    public void sendMail(String email, String subject, String mailMessage) throws Exception {
 
         Session session = Session.getInstance(prop, new Authenticator() {
             @Override
@@ -43,21 +50,14 @@ public class SendMailService {
 
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(username));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("danynimara@gmail.com"));
-        message.setSubject("Mail Subject");
-
-        String msg = "This is my first email using JavaMailer";
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+        message.setSubject(subject);
 
         MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
-
-        String msgStyled = "This is my <b style='color:red;'>bold-red email</b> using JavaMailer";
-        MimeBodyPart mimeBodyPartWithStyledText = new MimeBodyPart();
-        mimeBodyPartWithStyledText.setContent(msgStyled, "text/html; charset=utf-8");
+        mimeBodyPart.setContent(mailMessage, "text/html; charset=utf-8");
 
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(mimeBodyPart);
-        multipart.addBodyPart(mimeBodyPartWithStyledText);
 
         message.setContent(multipart);
 

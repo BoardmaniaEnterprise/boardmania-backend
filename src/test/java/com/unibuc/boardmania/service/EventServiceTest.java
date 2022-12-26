@@ -62,13 +62,13 @@ public class EventServiceTest {
         user = User.builder()
                 .id(1L)
                 .createdEvents(new ArrayList<>())
-                .trustScore(0.5)
+                .trustScore(50)
                 .build();
 
         event = Event.builder()
                 .id(1L)
                 .initiator(user)
-                .minTrustScore(0.5)
+                .minTrustScore(50)
                 .build();
 
         game = Game.builder()
@@ -245,8 +245,8 @@ public class EventServiceTest {
     @DisplayName("Join event, expected BadRequestException(Trust score too low)")
     public void joinEventNotEnoughTrust() {
         //having
-        user.setTrustScore(0.4);
-        event.setMinTrustScore(0.5);
+        user.setTrustScore(40);
+        event.setMinTrustScore(50);
 
         //when
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));

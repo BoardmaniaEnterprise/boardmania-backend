@@ -12,11 +12,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "events")
+@Entity(name = "events")
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -28,7 +28,7 @@ public class Event {
 
     private String location;
 
-    private Long eventDateTimeStamp;
+    private Long eventDateTimestamp;
 
     private Long votingDeadlineTimestamp;
 
@@ -40,7 +40,7 @@ public class Event {
 
     private int maxNumberOfPlayers;
 
-    private Double minTrustScore;
+    private int minTrustScore;
 
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false)
@@ -61,5 +61,10 @@ public class Event {
     private Game pickedGame;
 
     private boolean deleted;
+
+    public void addParticipant(UserEvent ue) {
+        this.participants.add(ue);
+        ue.setEvent(this);
+    }
 
 }
