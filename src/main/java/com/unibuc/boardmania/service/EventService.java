@@ -112,8 +112,12 @@ public class EventService {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found!"));
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found!"));
+
         if (userEventRepository.findByEventIdAndUserId(eventId, userId).isPresent()) {
             throw new BadRequestException("User already joined this event!");
+        }
+        if (event.getVotingDeadlineTimestamp() > DateTime.now().getMillis() / 1000) {
+            throw new BadRequestException("Voting period has ended. Users can no longer join this event at this stage.");
         }
         if (user.getTrustScore() < event.getMinTrustScore()) {
             throw new BadRequestException("Trust score too low to take part in this event.");
@@ -216,6 +220,29 @@ public class EventService {
                     }
                 }
         );
+    }
+
+    @Scheduled(cron = "00 00 10 * * *", zone = "Europe/Bucharest")
+    @Transactional
+    public void notifyUsersEventsToday() {
+
+        List<Event> eventsToday =
+                eventRepository.findAllTakingPlaceTodayAndDeletedFalse(DateTime.now().withTimeAtStartOfDay().getMillis() / 1000,
+                        DateTime.now().withTimeAtStartOfDay().plusDays(1).getMillis() / 1000);
+        eventsToday.forEach(
+                e -> {
+                    List<UserEvent> userEventList = userEventRepository.getParticipantsByEventId(e.getId());
+                    for (UserEvent ue : userEventList) {
+                        String mailSubject = String.format("Reminder! You have %s today.", e.getName());
+                        String mailMessage = String.format("We will be waiting for you today at the following address: %s.",
+                                e.getLocation());
+                        try {
+                            sendMailService.sendMail(ue.getUser().getEmail(), mailSubject, mailMessage);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
     }
 
     private Token getTokenByValue(UUID value) {
