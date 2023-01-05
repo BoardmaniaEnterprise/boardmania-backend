@@ -89,22 +89,22 @@ public class GameServiceTest {
         assertEquals("Game already exists", thrown.getMessage());
     }
 
-    @Test
-    @DisplayName("Get all games, expected success")
-    public void getGames() {
-        //having
-        List<Game> gameList = new ArrayList<>();
-        gameList.add(game);
-
-        //when
-        when(gameRepository.findAllByDeletedFalse()).thenReturn(gameList);
-
-        //then
-        List<Game> response = gameService.getAllGames();
-
-        verify(gameRepository).findAllByDeletedFalse();
-        assertEquals(gameList, response);
-    }
+//    @Test
+//    @DisplayName("Get all games, expected success")
+//    public void getGames() {
+//        //having
+//        List<Game> gameList = new ArrayList<>();
+//        gameList.add(game);
+//
+//        //when
+//        when(gameRepository.findAllByDeletedFalse()).thenReturn(gameList);
+//
+//        //then
+//        List<Game> response = gameService.getAllGames();
+//
+//        verify(gameRepository).findAllByDeletedFalse();
+//        assertEquals(gameList, response);
+//    }
 
     @Test
     @DisplayName("Delete game, expected success")

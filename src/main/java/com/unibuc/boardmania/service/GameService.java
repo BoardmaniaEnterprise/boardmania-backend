@@ -1,5 +1,6 @@
 package com.unibuc.boardmania.service;
 
+import com.unibuc.boardmania.dto.GameDto;
 import com.unibuc.boardmania.dto.NewGameDto;
 import com.unibuc.boardmania.dto.UpdateGameDto;
 import com.unibuc.boardmania.model.Game;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotFoundException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +35,10 @@ public class GameService {
         return gameRepository.save(game).getId();
     }
 
-    public List<Game> getAllGames() {
-        return gameRepository.findAllByDeletedFalse();
+    public List<GameDto> getAllGames() {
+        List<Game> games = gameRepository.findAllByDeletedFalse();
+        List<GameDto> gameDtos = games.stream().map(game -> GameDto.builder().id(game.getId()).name(game.getName()).build()).collect(Collectors.toList());
+        return gameDtos;
     }
 
     public void deleteGame(Long id) {
