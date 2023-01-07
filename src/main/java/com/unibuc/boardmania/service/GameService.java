@@ -37,7 +37,7 @@ public class GameService {
 
     public List<GameDto> getAllGames() {
         List<Game> games = gameRepository.findAllByDeletedFalse();
-        List<GameDto> gameDtos = games.stream().map(game -> GameDto.builder().id(game.getId()).name(game.getName()).build()).collect(Collectors.toList());
+        List<GameDto> gameDtos = games.stream().map(game -> GameDto.builder().id(game.getId()).name(game.getName()).description(game.getDescription()).minNumberOfPlayers(game.getMinNumberOfPlayers()).maxNumberOfPlayers(game.getMaxNumberOfPlayers()).url(game.getUrl()).build()).collect(Collectors.toList());
         return gameDtos;
     }
 

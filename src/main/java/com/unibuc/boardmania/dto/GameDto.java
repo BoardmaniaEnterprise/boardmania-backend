@@ -8,4 +8,12 @@ import lombok.Data;
 public class GameDto {
     private Long id;
     private String name;
+
+    private int minNumberOfPlayers;
+
+    private int maxNumberOfPlayers;
+
+    private String description;
+
+    private String url;
 }
