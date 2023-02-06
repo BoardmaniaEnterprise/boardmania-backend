@@ -20,15 +20,45 @@ import javax.ws.rs.NotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final EventRepository eventRepository;
-    private final ReviewRepository reviewRepository;
-    private final UserEventRepository userEventRepository;
-    private final KeycloakAdminService keycloakAdminService;
+    private static UserService userServiceInstance = null;
+
+    private UserService() {
+    }
+
+    public static UserService getInstance() {
+        if (userServiceInstance == null)
+            userServiceInstance = new UserService();
+
+        return userServiceInstance;
+    }
+
+    private UserRepository userRepository;
+    private EventRepository eventRepository;
+    private ReviewRepository reviewRepository;
+    private UserEventRepository userEventRepository;
+    private KeycloakAdminService keycloakAdminService;
+
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public void setEventRepository(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
+
+    public void setReviewRepository(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
+
+    public void setUserEventRepository(UserEventRepository userEventRepository) {
+        this.userEventRepository = userEventRepository;
+    }
+
+    public void setKeycloakAdminService(KeycloakAdminService keycloakAdminService) {
+        this.keycloakAdminService = keycloakAdminService;
+    }
 
     public List<UserDto> getUsers() {
         List<User> users = userRepository.findAll();

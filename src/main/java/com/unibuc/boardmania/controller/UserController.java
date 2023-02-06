@@ -15,11 +15,10 @@ import static com.unibuc.boardmania.utils.HttpStatusUtility.successResponse;
 
 @RestController
 @RequestMapping("users")
-@RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class UserController {
 
-    private final UserService userService;
+    UserService userService = UserService.getInstance();
 
     @GetMapping()
     public ResponseEntity<?> getUsers() {
