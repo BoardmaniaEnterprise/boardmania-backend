@@ -48,4 +48,9 @@ public class GameController {
         gameService.deleteGame(id);
         return successResponse();
     }
+    @GetMapping("/event/{id}")
+    public ResponseEntity<?> getGamesForEvent(@PathVariable Long id, Authentication authentication) {
+        return new ResponseEntity<>(gameService.getGamesForEvent(id), HttpStatus.OK);
+
+    }
 }

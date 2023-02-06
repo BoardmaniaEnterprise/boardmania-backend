@@ -3,9 +3,13 @@ package com.unibuc.boardmania.service;
 import com.unibuc.boardmania.dto.GameDto;
 import com.unibuc.boardmania.dto.NewGameDto;
 import com.unibuc.boardmania.dto.UpdateGameDto;
+import com.unibuc.boardmania.model.Event;
+import com.unibuc.boardmania.model.EventGame;
 import com.unibuc.boardmania.model.Game;
+import com.unibuc.boardmania.repository.EventRepository;
 import com.unibuc.boardmania.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.BadRequestException;
@@ -17,7 +21,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GameService {
 
+    @Autowired
     private final GameRepository gameRepository;
+    @Autowired
+    private final EventRepository eventRepository;
 
     public Long addGame(NewGameDto newGameDto, Long userId) {
         if (gameRepository.findByName(newGameDto.getName()).isPresent()) {
@@ -73,5 +80,24 @@ public class GameService {
             game.setUrl(updateGameDto.getUrl());
         }
         gameRepository.save(game);
+    }
+
+    public List<GameDto> getGamesForEvent(Long id) {
+        List<GameDto> gameDtoList = List.of();
+        if (eventRepository.existsById(id)) {
+            Event event = eventRepository.getById(id);
+            List<Game> games = event.getEventGames().stream().map(EventGame::getGame).toList();
+            gameDtoList = games.stream()
+                    .map(game -> GameDto.builder()
+                            .id(game.getId())
+                            .name(game.getName())
+                            .description(game.getDescription())
+                            .minNumberOfPlayers(game.getMinNumberOfPlayers())
+                            .maxNumberOfPlayers(game.getMaxNumberOfPlayers())
+                            .url(game.getUrl())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+        return gameDtoList;
     }
 }
