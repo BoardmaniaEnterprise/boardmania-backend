@@ -27,6 +27,11 @@ public class EventController {
         return new ResponseEntity<>(eventService.getEvents(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
     }
 
+    @GetMapping("/current-user")
+    public ResponseEntity<?> getEventsOfCurrentUser(Authentication authentication) {
+        return new ResponseEntity<>(eventService.getEventsOfCurrentUser(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody CreateEventDto createEventDto, Authentication authentication) {
         return new ResponseEntity<>(eventService.createEvent(createEventDto, KeycloakHelper.getUserId(authentication)),

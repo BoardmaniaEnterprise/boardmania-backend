@@ -63,6 +63,7 @@ public class EventService {
                         .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
                         .online(event.isOnline())
                         .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
+                        .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
                         .build()).collect(Collectors.toList());
         return eventDtoList;
     }
@@ -220,6 +221,22 @@ public class EventService {
                     }
                 }
         );
+    }
+
+    public List<EventDto> getEventsOfCurrentUser(Long userId) {
+        List<Event> events = eventRepository.findAllByInitiatorId(userId);
+        List<EventDto> eventDtoList = events.stream()
+                .map(event -> EventDto.builder()
+                        .id(event.getId())
+                        .description(event.getDescription())
+                        .minTrustScore(event.getMinTrustScore())
+                        .location(event.getLocation())
+                        .name(event.getName())
+                        .online(event.isOnline())
+                        .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
+                        .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
+                        .build()).collect(Collectors.toList());
+        return eventDtoList;
     }
 
     @Scheduled(cron = "00 00 10 * * *", zone = "Europe/Bucharest")

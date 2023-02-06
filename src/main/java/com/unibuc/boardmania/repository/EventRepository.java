@@ -21,4 +21,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND e.eventDateTimestamp <= :dayEndTimestamp")
     List<Event> findAllTakingPlaceTodayAndDeletedFalse(Long dayStartTimestamp, Long dayEndTimestamp);
 
+    List<Event> findAllByInitiatorId(Long userId);
+
 }

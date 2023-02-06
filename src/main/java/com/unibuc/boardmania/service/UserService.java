@@ -54,7 +54,7 @@ public class UserService {
                 .build();
 
         newUser = userRepository.save(newUser);
-        keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "ROLE_USER");
+        keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "USER");
     }
 
     @Transactional

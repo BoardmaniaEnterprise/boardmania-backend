@@ -15,6 +15,8 @@ public class EventDto {
 
     private Long id;
 
+    private String initiatorName;
+
     private String name;
 
     private String description;
