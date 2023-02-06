@@ -21,14 +21,17 @@ public class CreateEventDto {
 
     private String location;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime dateTime;
+    private Long eventDateTimestamp;
+
+    private Long votingDeadlineTimestamp;
+
+    private Long confirmationDeadlineTimestamp;
 
     private boolean online;
 
     private int maxNrOfPlayers;
 
-    private Double minTrustScore;
+    private int minTrustScore;
 
     private List<Long> gameIds;
 

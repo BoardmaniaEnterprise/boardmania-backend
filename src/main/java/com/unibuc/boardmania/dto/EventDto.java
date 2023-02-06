@@ -21,12 +21,16 @@ public class EventDto {
 
     private String location;
 
-    private Double minTrustScore;
+    private Long eventDateTimestamp;
+
+    private Long votingDeadlineTimestamp;
+
+    private Long confirmationDeadlineTimestamp;
+
+    private int minTrustScore;
 
     private int maxNumberOfPlayers;
 
     private boolean online;
-
-    private LocalDateTime dateTime;
 
 }

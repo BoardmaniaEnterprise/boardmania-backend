@@ -1,5 +1,6 @@
 package com.unibuc.boardmania.model;
 
+import com.unibuc.boardmania.enums.HonorTitle;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

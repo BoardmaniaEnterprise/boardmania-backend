@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Data
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user_event")
+@Entity(name = "user_event")
 public class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -25,6 +25,8 @@ public class UserEvent {
     @ManyToOne
     @JoinColumn(name="event_id", nullable=false)
     private Event event;
+
+    private boolean sentConfirmationEmail;
 
     private boolean confirmed;
 

@@ -68,7 +68,7 @@ public class GameServiceTest {
         when(gameRepository.save(any(Game.class))).thenReturn(game);
 
         //then
-        Long response = gameService.addGame(newGameDto, 1L);
+        Long response = gameService.addGame(newGameDto);
         verify(gameRepository).findByName(newGameDto.getName());
         verify(gameRepository).save(any(Game.class));
         assertEquals(game.getId(), response);
@@ -81,9 +81,8 @@ public class GameServiceTest {
         when(gameRepository.findByName(newGameDto.getName())).thenReturn(Optional.ofNullable(game));
 
         //then
-        BadRequestException thrown = assertThrows(BadRequestException.class, () -> {
-            gameService.addGame(newGameDto, 1L);
-        });
+        BadRequestException thrown = assertThrows(BadRequestException.class,
+                () -> gameService.addGame(newGameDto));
 
         verify(gameRepository).findByName(newGameDto.getName());
         assertEquals("Game already exists", thrown.getMessage());

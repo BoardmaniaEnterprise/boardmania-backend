@@ -6,10 +6,8 @@ import com.unibuc.boardmania.service.EventService;
 import com.unibuc.boardmania.utils.KeycloakHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +22,11 @@ public class EventController {
     @Autowired
     private final EventService eventService;
 
-//    @PreAuthorize("hasRole('USER')")
+    @GetMapping
+    public ResponseEntity<?> getAllEvents(Authentication authentication) {
+        return new ResponseEntity<>(eventService.getEvents(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<?> createEvent(@RequestBody CreateEventDto createEventDto, Authentication authentication) {
         return new ResponseEntity<>(eventService.createEvent(createEventDto, KeycloakHelper.getUserId(authentication)),
@@ -44,8 +46,10 @@ public class EventController {
         return successResponse();
     }
 
-    @GetMapping
-    public ResponseEntity<?> getAllEvents(Authentication authentication) {
-        return new ResponseEntity<>(eventService.getAllEvents(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
+    @PatchMapping("/confirm")
+    public ResponseEntity<?> confirmParticipation(@RequestParam String token) {
+        eventService.confirmParticipation(token);
+        return successResponse();
     }
+
 }
