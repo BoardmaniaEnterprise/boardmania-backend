@@ -23,8 +23,16 @@ public class EventController {
     private final EventService eventService;
 
     @GetMapping
-    public ResponseEntity<?> getAllEvents(Authentication authentication) {
-        return new ResponseEntity<>(eventService.getEvents(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
+    public ResponseEntity<?> getAllEvents(Authentication authentication,
+                                          @RequestParam (required = false, defaultValue = "0") Integer pageNumber,
+                                          @RequestParam (required = false, defaultValue = "0") Integer pageSize) {
+        return new ResponseEntity<>(eventService.getEvents(KeycloakHelper.getUserId(authentication), pageNumber, pageSize), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getEventById(Authentication authentication,
+                                          @PathVariable Long id) {
+        return new ResponseEntity<>(eventService.getEventById(KeycloakHelper.getUserId(authentication), id), HttpStatus.OK);
     }
 
     @GetMapping("/current-user")

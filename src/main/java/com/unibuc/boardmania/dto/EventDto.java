@@ -29,6 +29,8 @@ public class EventDto {
 
     private Long confirmationDeadlineTimestamp;
 
+    private boolean joined;
+
     private int minTrustScore;
 
     private int maxNumberOfPlayers;

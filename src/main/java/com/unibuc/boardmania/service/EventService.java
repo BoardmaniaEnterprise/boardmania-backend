@@ -5,9 +5,12 @@ import com.unibuc.boardmania.dto.EventDto;
 import com.unibuc.boardmania.dto.JoinEventDto;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
+import com.unibuc.boardmania.utils.PageUtility;
 import lombok.RequiredArgsConstructor;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +51,10 @@ public class EventService {
     @Value("${link.confirm.attendance}")
     private String confirmationLink;
 
-    public List<EventDto> getEvents(Long userId) {
+    public List<EventDto> getEvents(Long userId, Integer pageNumber, Integer pageSize) {
 
-        List<Event> events = eventRepository.findAllByDeletedFalse();
+        Pageable pageable = PageUtility.getEventsPageable(pageNumber, pageSize);
+        Page<Event> events = eventRepository.findAllByDeletedFalse(pageable);
         List<EventDto> eventDtoList = events.stream()
                 .map(event -> EventDto.builder()
                         .id(event.getId())
@@ -62,10 +66,31 @@ public class EventService {
                         .votingDeadlineTimestamp(event.getVotingDeadlineTimestamp())
                         .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
                         .online(event.isOnline())
+                        .joined(userEventRepository.findByEventIdAndUserId(event.getId(), userId).isPresent())
                         .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
                         .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
                         .build()).collect(Collectors.toList());
         return eventDtoList;
+    }
+
+    public EventDto getEventById(Long userId, Long eventId) {
+
+        Event event = eventRepository.getById(eventId);
+        EventDto eventDto = EventDto.builder()
+                                    .id(event.getId())
+                                    .description(event.getDescription())
+                                    .minTrustScore(event.getMinTrustScore())
+                                    .location(event.getLocation())
+                                    .name(event.getName())
+                                    .eventDateTimestamp(event.getEventDateTimestamp())
+                                    .votingDeadlineTimestamp(event.getVotingDeadlineTimestamp())
+                                    .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
+                                    .online(event.isOnline())
+                                    .joined(userEventRepository.findByEventIdAndUserId(event.getId(), userId).isPresent())
+                                    .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
+                                    .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
+                                    .build();
+        return eventDto;
     }
 
     public Event createEvent(CreateEventDto createEventDto, Long userId) {
