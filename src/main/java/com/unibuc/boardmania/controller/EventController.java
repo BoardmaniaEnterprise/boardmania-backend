@@ -1,7 +1,8 @@
 package com.unibuc.boardmania.controller;
 
-import com.unibuc.boardmania.dto.CreateEventDto;
-import com.unibuc.boardmania.dto.JoinEventDto;
+import com.unibuc.boardmania.dto.event.CreateEventDto;
+import com.unibuc.boardmania.dto.event.EventFiltersDto;
+import com.unibuc.boardmania.dto.event.JoinEventDto;
 import com.unibuc.boardmania.service.EventService;
 import com.unibuc.boardmania.utils.KeycloakHelper;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +23,13 @@ public class EventController {
     @Autowired
     private final EventService eventService;
 
-    @GetMapping
+    //Cant send get req with request body using axios, that's why this is POST:
+    @PostMapping("/page")
     public ResponseEntity<?> getAllEvents(Authentication authentication,
                                           @RequestParam (required = false, defaultValue = "0") Integer pageNumber,
-                                          @RequestParam (required = false, defaultValue = "0") Integer pageSize) {
-        return new ResponseEntity<>(eventService.getEvents(KeycloakHelper.getUserId(authentication), pageNumber, pageSize), HttpStatus.OK);
+                                          @RequestParam (required = false, defaultValue = "0") Integer pageSize,
+                                          @RequestBody EventFiltersDto filters) {
+        return new ResponseEntity<>(eventService.getEvents(KeycloakHelper.getUserId(authentication), pageNumber, pageSize, filters), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

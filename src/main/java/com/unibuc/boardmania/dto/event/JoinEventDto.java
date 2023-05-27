@@ -1,5 +1,6 @@
-package com.unibuc.boardmania.dto;
+package com.unibuc.boardmania.dto.event;
 
+import com.unibuc.boardmania.dto.VoteDto;
 import com.unibuc.boardmania.model.Vote;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

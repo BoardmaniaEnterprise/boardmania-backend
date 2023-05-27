@@ -1,4 +1,4 @@
-package com.unibuc.boardmania.dto;
+package com.unibuc.boardmania.dto.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.unibuc.boardmania.service;
 
-import com.unibuc.boardmania.dto.CreateEventDto;
-import com.unibuc.boardmania.dto.JoinEventDto;
+import com.unibuc.boardmania.dto.event.CreateEventDto;
+import com.unibuc.boardmania.dto.event.JoinEventDto;
 import com.unibuc.boardmania.dto.VoteDto;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;

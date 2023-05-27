@@ -1,8 +1,9 @@
 package com.unibuc.boardmania.service;
 
-import com.unibuc.boardmania.dto.CreateEventDto;
-import com.unibuc.boardmania.dto.EventDto;
-import com.unibuc.boardmania.dto.JoinEventDto;
+import com.unibuc.boardmania.dto.event.CreateEventDto;
+import com.unibuc.boardmania.dto.event.EventDto;
+import com.unibuc.boardmania.dto.event.EventFiltersDto;
+import com.unibuc.boardmania.dto.event.JoinEventDto;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
 import com.unibuc.boardmania.utils.PageUtility;
@@ -25,6 +26,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.unibuc.boardmania.specifications.EventSpecifications.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,11 +54,14 @@ public class EventService {
     @Value("${link.confirm.attendance}")
     private String confirmationLink;
 
-    public List<EventDto> getEvents(Long userId, Integer pageNumber, Integer pageSize) {
+    public List<EventDto> getEvents(Long userId, Integer pageNumber, Integer pageSize, EventFiltersDto filters) {
 
         Pageable pageable = PageUtility.getEventsPageable(pageNumber, pageSize);
-        Page<Event> events = eventRepository.findAllByDeletedFalse(pageable);
-        List<EventDto> eventDtoList = events.stream()
+        Page<Event> events = eventRepository.findAll(searchName(filters.getSearchParam())
+                .and(searchType(filters.getLocationType()))
+                .and(afterNow()), pageable);
+
+        return events.stream()
                 .map(event -> EventDto.builder()
                         .id(event.getId())
                         .description(event.getDescription())
@@ -70,7 +76,6 @@ public class EventService {
                         .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
                         .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
                         .build()).collect(Collectors.toList());
-        return eventDtoList;
     }
 
     public EventDto getEventById(Long userId, Long eventId) {
