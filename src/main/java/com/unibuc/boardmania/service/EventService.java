@@ -54,28 +54,27 @@ public class EventService {
     @Value("${link.confirm.attendance}")
     private String confirmationLink;
 
-    public List<EventDto> getEvents(Long userId, Integer pageNumber, Integer pageSize, EventFiltersDto filters) {
+    public Page<EventDto> getEvents(Long userId, Integer pageNumber, Integer pageSize, EventFiltersDto filters) {
 
         Pageable pageable = PageUtility.getEventsPageable(pageNumber, pageSize);
         Page<Event> events = eventRepository.findAll(searchName(filters.getSearchParam())
                 .and(searchType(filters.getLocationType()))
                 .and(afterNow()), pageable);
 
-        return events.stream()
-                .map(event -> EventDto.builder()
-                        .id(event.getId())
-                        .description(event.getDescription())
-                        .minTrustScore(event.getMinTrustScore())
-                        .location(event.getLocation())
-                        .name(event.getName())
-                        .eventDateTimestamp(event.getEventDateTimestamp())
-                        .votingDeadlineTimestamp(event.getVotingDeadlineTimestamp())
-                        .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
-                        .online(event.isOnline())
-                        .joined(userEventRepository.findByEventIdAndUserId(event.getId(), userId).isPresent())
-                        .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
-                        .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
-                        .build()).collect(Collectors.toList());
+        return events.map(event -> EventDto.builder()
+                .id(event.getId())
+                .description(event.getDescription())
+                .minTrustScore(event.getMinTrustScore())
+                .location(event.getLocation())
+                .name(event.getName())
+                .eventDateTimestamp(event.getEventDateTimestamp())
+                .votingDeadlineTimestamp(event.getVotingDeadlineTimestamp())
+                .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
+                .online(event.isOnline())
+                .joined(userEventRepository.findByEventIdAndUserId(event.getId(), userId).isPresent())
+                .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
+                .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
+                .build());
     }
 
     public EventDto getEventById(Long userId, Long eventId) {
