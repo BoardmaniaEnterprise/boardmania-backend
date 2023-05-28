@@ -1,5 +1,7 @@
 package com.unibuc.boardmania.service;
 
+import com.unibuc.boardmania.dto.ParticipantDto;
+import com.unibuc.boardmania.dto.UserDto;
 import com.unibuc.boardmania.dto.event.CreateEventDto;
 import com.unibuc.boardmania.dto.event.EventDto;
 import com.unibuc.boardmania.dto.event.EventFiltersDto;
@@ -298,4 +300,13 @@ public class EventService {
                 .orElseThrow(() -> new NotFoundException("Token not found or no longer in use"));
     }
 
+    public List<ParticipantDto> getParticipants(Long id) {
+        List<UserEvent> usersInEvent = userEventRepository.getParticipantsByEventId(id);
+        List<User> users = usersInEvent.stream().map(userEvent -> userRepository.getById(userEvent.getId())).collect(Collectors.toList());
+        return users.stream().map(user -> ParticipantDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build()).collect(Collectors.toList());
+    }
 }

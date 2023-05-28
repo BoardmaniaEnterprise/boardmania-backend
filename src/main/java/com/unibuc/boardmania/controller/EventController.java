@@ -68,4 +68,8 @@ public class EventController {
         return successResponse();
     }
 
+    @GetMapping("/participants/{id}")
+    public ResponseEntity<?> getParticipants(@PathVariable Long id, Authentication authentication) {
+        return new ResponseEntity<>(eventService.getParticipants(id), HttpStatus.OK);
+    }
 }

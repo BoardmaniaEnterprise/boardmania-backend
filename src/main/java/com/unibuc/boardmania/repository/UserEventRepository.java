@@ -23,6 +23,6 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     @Query("UPDATE user_event SET confirmed = :value WHERE user.id = :userId AND event.id = :eventId")
     void updateConfirmedByUserIdAndEventId(Long userId, Long eventId, boolean value);
 
-    @Query("SELECT ue FROM user_event ue WHERE ue.event.id = :eventId")
+    @Query("SELECT ue FROM user_event ue WHERE ue.event.id = :eventId and ue.deleted=false")
     List<UserEvent> getParticipantsByEventId(Long eventId);
 }
