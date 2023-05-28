@@ -35,4 +35,9 @@ public class UserController {
         return new ResponseEntity<>(userService.submitReview(reviewDto, eventId, userId, KeycloakHelper.getUserId(authentication)),
                 HttpStatus.OK);
     }
+
+    @GetMapping("/current-user")
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        return new ResponseEntity<>(userService.getCurrentUser(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
+    }
 }

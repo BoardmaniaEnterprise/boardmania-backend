@@ -1,5 +1,6 @@
 package com.unibuc.boardmania.service;
 
+import com.unibuc.boardmania.dto.CurrentUserDto;
 import com.unibuc.boardmania.dto.RegisterDto;
 import com.unibuc.boardmania.dto.ReviewDto;
 import com.unibuc.boardmania.dto.UserDto;
@@ -109,5 +110,16 @@ public class UserService {
                 .deleted(false).build();
 
         return reviewRepository.save(review).getId();
+    }
+
+    public CurrentUserDto getCurrentUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found!"));
+        return CurrentUserDto.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .trustScore(user.getTrustScore())
+                .build();
     }
 }

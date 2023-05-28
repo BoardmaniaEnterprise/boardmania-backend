@@ -25,10 +25,7 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotFoundException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.unibuc.boardmania.specifications.EventSpecifications.*;
@@ -303,13 +300,21 @@ public class EventService {
 
     public List<ParticipantDto> getParticipants(Long id) {
         List<UserEvent> usersInEvent = userEventRepository.getParticipantsByEventId(id);
-        List<User> users = usersInEvent.stream().map(userEvent -> userRepository.getById(userEvent.getId())).collect(Collectors.toList());
-        // TODO: Return UserEventPlace and UserEventStatus in DTO
-        return users.stream().map(user -> ParticipantDto.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .build()).collect(Collectors.toList());
+
+        Map<UserEvent, User> usersMap = new HashMap<>();
+        usersInEvent.forEach(userEvent -> usersMap.put(userEvent, userRepository.getById(userEvent.getUser().getId())));
+
+        List<ParticipantDto> participants = new ArrayList<>();
+        usersMap.forEach((userEvent, user) -> participants.add(ParticipantDto
+                .builder()
+                        .id(user.getId())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .userEventPlace(userEvent.getUserEventPlace())
+                        .userEventStatus(userEvent.getUserEventStatus())
+                .build()));
+
+        return participants;
     }
 
     @Transactional
