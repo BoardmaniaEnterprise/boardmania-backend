@@ -347,4 +347,25 @@ public class EventService {
         }
 
     }
+
+    public List<EventDto> getEventsAsParticipant(Long userId) {
+        List<UserEvent> userEvents = userEventRepository.getEventsByUserId(userId);
+        List<Event> events = userEvents.stream().map(userEvent -> eventRepository.getById(userEvent.getEvent().getId())).collect(Collectors.toList());
+        return events.stream().map(event ->
+                EventDto.builder()
+                        .id(event.getId())
+                        .description(event.getDescription())
+                        .minTrustScore(event.getMinTrustScore())
+                        .location(event.getLocation())
+                        .name(event.getName())
+                        .eventDateTimestamp(event.getEventDateTimestamp())
+                        .votingDeadlineTimestamp(event.getVotingDeadlineTimestamp())
+                        .confirmationDeadlineTimestamp(event.getConfirmationDeadlineTimestamp())
+                        .online(event.isOnline())
+                        .joined(true)
+                        .maxNumberOfPlayers(event.getMaxNumberOfPlayers())
+                        .initiatorName(event.getInitiator().getFirstName() + " " + event.getInitiator().getLastName())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

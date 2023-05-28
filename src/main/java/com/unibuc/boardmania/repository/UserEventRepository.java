@@ -31,4 +31,7 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
 
     @Query("SELECT ue FROM user_event ue WHERE ue.event.id = :eventId and ue.deleted=false")
     List<UserEvent> getParticipantsByEventId(Long eventId);
+
+    @Query("SELECT ue from user_event ue WHERE ue.user.id = :userId and ue.deleted=false")
+    List<UserEvent> getEventsByUserId(Long userId);
 }

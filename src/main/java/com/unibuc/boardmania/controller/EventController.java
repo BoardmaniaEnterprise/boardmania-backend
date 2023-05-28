@@ -80,4 +80,9 @@ public class EventController {
         eventService.postEventInitiatorReport(KeycloakHelper.getUserId(authentication), postEventInitiatorReportDto);
         return successResponse();
     }
+
+    @GetMapping("/participant")
+    public ResponseEntity<?> getEventsAsParticipant(Authentication authentication){
+        return new ResponseEntity<>(eventService.getEventsAsParticipant(KeycloakHelper.getUserId(authentication)), HttpStatus.OK);
+    }
 }
