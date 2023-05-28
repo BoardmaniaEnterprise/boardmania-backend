@@ -84,7 +84,7 @@ public class UserService {
                 .build();
 
         newUser = userRepository.save(newUser);
-        keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "USER");
+        keycloakAdminService.registerUser(newUser, registerDto.getPassword(), "ROLE_USER");
     }
 
     @Transactional
@@ -93,7 +93,7 @@ public class UserService {
             throw new NotFoundException("User not found!");
         }
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found!"));
-        if (event.getEventDateTimestamp() > DateTime.now().getMillis()) {
+        if (event.getEventDateTimestamp() > DateTime.now().getMillis() / 1000) {
             throw new BadRequestException("Cannot send review before the event begins!");
         }
         if (userEventRepository.findByEventIdAndUserId(eventId, reviewerId).isEmpty() ||

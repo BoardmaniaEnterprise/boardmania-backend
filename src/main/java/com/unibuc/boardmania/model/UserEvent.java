@@ -1,5 +1,7 @@
 package com.unibuc.boardmania.model;
 
+import com.unibuc.boardmania.enums.UserEventPlace;
+import com.unibuc.boardmania.enums.UserEventStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,9 +28,13 @@ public class UserEvent {
     @JoinColumn(name="event_id", nullable=false)
     private Event event;
 
+    @Enumerated(EnumType.STRING)
+    private UserEventPlace userEventPlace;
+
     private boolean sentConfirmationEmail;
 
-    private boolean confirmed;
+    @Enumerated(EnumType.STRING)
+    private UserEventStatus userEventStatus;
 
     private boolean deleted;
 

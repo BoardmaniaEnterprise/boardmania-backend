@@ -1,5 +1,7 @@
 package com.unibuc.boardmania.repository;
 
+import com.unibuc.boardmania.enums.UserEventPlace;
+import com.unibuc.boardmania.enums.UserEventStatus;
 import com.unibuc.boardmania.model.UserEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,8 +22,12 @@ public interface UserEventRepository extends JpaRepository<UserEvent, Long> {
     void updateSentConfirmationEmail(Long userEventId, boolean value);
 
     @Modifying
-    @Query("UPDATE user_event SET confirmed = :value WHERE user.id = :userId AND event.id = :eventId")
-    void updateConfirmedByUserIdAndEventId(Long userId, Long eventId, boolean value);
+    @Query("UPDATE user_event SET userEventPlace = :place WHERE user.id = :userId AND event.id = :eventId")
+    void updateUserEventPlaceByUserIdAndEventId(Long userId, Long eventId, UserEventPlace place);
+
+    @Modifying
+    @Query("UPDATE user_event SET userEventStatus = :status WHERE user.id = :userId AND event.id = :eventId")
+    void updateUserEventStatusByUserIdAndEventId(Long userId, Long eventId, UserEventStatus status);
 
     @Query("SELECT ue FROM user_event ue WHERE ue.event.id = :eventId and ue.deleted=false")
     List<UserEvent> getParticipantsByEventId(Long eventId);

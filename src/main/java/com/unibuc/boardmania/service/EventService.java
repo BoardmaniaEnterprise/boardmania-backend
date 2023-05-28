@@ -1,11 +1,13 @@
 package com.unibuc.boardmania.service;
 
 import com.unibuc.boardmania.dto.ParticipantDto;
-import com.unibuc.boardmania.dto.UserDto;
+import com.unibuc.boardmania.dto.PostEventInitiatorReportDto;
 import com.unibuc.boardmania.dto.event.CreateEventDto;
 import com.unibuc.boardmania.dto.event.EventDto;
 import com.unibuc.boardmania.dto.event.EventFiltersDto;
 import com.unibuc.boardmania.dto.event.JoinEventDto;
+import com.unibuc.boardmania.enums.UserEventPlace;
+import com.unibuc.boardmania.enums.UserEventStatus;
 import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
 import com.unibuc.boardmania.utils.PageUtility;
@@ -158,7 +160,7 @@ public class EventService {
         UserEvent userEvent = UserEvent.builder()
                 .event(event)
                 .user(user)
-                .confirmed(false)
+                .userEventStatus(UserEventStatus.UNCONFIRMED)
                 .sentConfirmationEmail(false)
                 .deleted(false)
                 .build();
@@ -211,7 +213,7 @@ public class EventService {
         Long userId = token.getUser().getId();
         tokenRepository.deleteByValue(UUID.fromString(tokenString));
 
-        userEventRepository.updateConfirmedByUserIdAndEventId(userId, eventId, true);
+        userEventRepository.updateUserEventStatusByUserIdAndEventId(userId, eventId, UserEventStatus.CONFIRMED);
     }
 
     @Scheduled(cron = "00 00 * * * *", zone = "Europe/Bucharest")
@@ -302,10 +304,40 @@ public class EventService {
     public List<ParticipantDto> getParticipants(Long id) {
         List<UserEvent> usersInEvent = userEventRepository.getParticipantsByEventId(id);
         List<User> users = usersInEvent.stream().map(userEvent -> userRepository.getById(userEvent.getId())).collect(Collectors.toList());
+        // TODO: Return UserEventPlace and UserEventStatus in DTO
         return users.stream().map(user -> ParticipantDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .build()).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void postEventInitiatorReport(Long userId, PostEventInitiatorReportDto postEventInitiatorReportDto) {
+        Event event = eventRepository.getById(postEventInitiatorReportDto.getEventId());
+
+        if (!userId.equals(event.getInitiator().getId()))
+            throw new BadRequestException("Only the initiator can send this report.");
+
+        if (event.getEventDateTimestamp() > DateTime.now().getMillis())
+            throw new BadRequestException("Event still hasn't taken place!");
+
+        userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getFirstPlaceUserId(),
+                event.getId(), UserEventPlace.FIRST);
+        userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getSecondPlaceUserId(),
+                event.getId(), UserEventPlace.SECOND);
+        userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getThirdPlaceUserId(),
+                event.getId(), UserEventPlace.THIRD);
+
+        for (UserEvent eventUser: userEventRepository.getParticipantsByEventId(event.getId())) {
+            User user = eventUser.getUser();
+            if (postEventInitiatorReportDto.getAbsentUserIds().contains(user.getId())) {
+                userEventRepository.updateUserEventStatusByUserIdAndEventId(user.getId(), event.getId(), UserEventStatus.ABSENT);
+                userRepository.updateTrustScoreByUserId(user.getId(), user.getTrustScore() - (100 - user.getTrustScore()));
+            } else {
+                userEventRepository.updateUserEventStatusByUserIdAndEventId(user.getId(), event.getId(), UserEventStatus.PRESENT);
+            }
+        }
+
     }
 }

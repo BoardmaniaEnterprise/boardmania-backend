@@ -1,5 +1,6 @@
 package com.unibuc.boardmania.controller;
 
+import com.unibuc.boardmania.dto.PostEventInitiatorReportDto;
 import com.unibuc.boardmania.dto.event.CreateEventDto;
 import com.unibuc.boardmania.dto.event.EventFiltersDto;
 import com.unibuc.boardmania.dto.event.JoinEventDto;
@@ -71,5 +72,12 @@ public class EventController {
     @GetMapping("/participants/{id}")
     public ResponseEntity<?> getParticipants(@PathVariable Long id, Authentication authentication) {
         return new ResponseEntity<>(eventService.getParticipants(id), HttpStatus.OK);
+    }
+
+    @PostMapping("/initiator-report")
+    public ResponseEntity<?> postEventInitiatorReport(Authentication authentication,
+                                                      @RequestBody PostEventInitiatorReportDto postEventInitiatorReportDto) {
+        eventService.postEventInitiatorReport(KeycloakHelper.getUserId(authentication), postEventInitiatorReportDto);
+        return successResponse();
     }
 }

@@ -15,4 +15,5 @@ public class RankController {
 
     @Autowired
     private final RankService rankService;
+
 }

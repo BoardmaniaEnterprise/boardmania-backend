@@ -28,5 +28,8 @@ public class Report {
     @JoinColumn(name = "reporter_id", nullable = false)
     private User reporter;
 
+    @ManyToOne
+    private Event event;
+
     private boolean deleted;
 }
