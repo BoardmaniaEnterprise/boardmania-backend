@@ -340,7 +340,8 @@ public class EventService {
             User user = eventUser.getUser();
             if (postEventInitiatorReportDto.getAbsentUserIds().contains(user.getId())) {
                 userEventRepository.updateUserEventStatusByUserIdAndEventId(user.getId(), event.getId(), UserEventStatus.ABSENT);
-                userRepository.updateTrustScoreByUserId(user.getId(), user.getTrustScore() - (100 - user.getTrustScore()));
+                int trustScoreDrop = 100 - user.getTrustScore() > 0 ? 100 - user.getTrustScore() : 1;
+                userRepository.updateTrustScoreByUserId(user.getId(), user.getTrustScore() - trustScoreDrop);
             } else {
                 userEventRepository.updateUserEventStatusByUserIdAndEventId(user.getId(), event.getId(), UserEventStatus.PRESENT);
             }
