@@ -12,6 +12,7 @@ import com.unibuc.boardmania.model.*;
 import com.unibuc.boardmania.repository.*;
 import com.unibuc.boardmania.utils.PageUtility;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -32,6 +33,7 @@ import static com.unibuc.boardmania.specifications.EventSpecifications.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EventService {
 
     private final SendMailService sendMailService;
@@ -147,7 +149,7 @@ public class EventService {
         if (userEventRepository.findByEventIdAndUserId(eventId, userId).isPresent()) {
             throw new BadRequestException("User already joined this event!");
         }
-        if (event.getVotingDeadlineTimestamp() > DateTime.now().getMillis() / 1000) {
+        if (event.getVotingDeadlineTimestamp() <= DateTime.now().getMillis() / 1000) {
             throw new BadRequestException("Voting period has ended. Users can no longer join this event at this stage.");
         }
         if (user.getTrustScore() < event.getMinTrustScore()) {
