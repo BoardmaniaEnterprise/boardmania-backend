@@ -328,12 +328,14 @@ public class EventService {
 
         if (event.getEventDateTimestamp() > DateTime.now().getMillis())
             throw new BadRequestException("Event still hasn't taken place!");
-
-        userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getFirstPlaceUserId(),
+        if(postEventInitiatorReportDto.getFirstPlaceUserId() != null)
+            userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getFirstPlaceUserId(),
                 event.getId(), UserEventPlace.FIRST);
-        userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getSecondPlaceUserId(),
+        if(postEventInitiatorReportDto.getSecondPlaceUserId() != null)
+            userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getSecondPlaceUserId(),
                 event.getId(), UserEventPlace.SECOND);
-        userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getThirdPlaceUserId(),
+        if(postEventInitiatorReportDto.getThirdPlaceUserId() != null)
+            userEventRepository.updateUserEventPlaceByUserIdAndEventId(postEventInitiatorReportDto.getThirdPlaceUserId(),
                 event.getId(), UserEventPlace.THIRD);
 
         for (UserEvent eventUser: userEventRepository.getParticipantsByEventId(event.getId())) {
